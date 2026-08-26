@@ -143,7 +143,7 @@
     <label>Date</label>
     <input type="date" id="date">
     <label>PM Name</label>
-    <input type="text" id="pmName" placeholder="Terran">
+    <input type="text" id="pmName">
   </div>
 
   <div id="jobCards"></div>
@@ -206,24 +206,100 @@
       <label><input type="radio" name="onsite" value="no">No</label>
     </div>
 
-    <label class="sub-label">Customer contact — who, how, roughly when</label>
-    <input type="text" class="contact" placeholder="e.g. Andre — spoke by phone — end of day">
+    <hr>
+    <p class="sub-label" style="font-weight:600;">Crew contact</p>
+    <div class="radio-row">
+      <span class="q">Site visit?</span>
+      <label><input type="radio" name="siteVisit" value="yes">Yes</label>
+      <label><input type="radio" name="siteVisit" value="no">No</label>
+    </div>
+    <div class="conditional siteVisitTimeBlock" hidden>
+      <label class="sub-label">AM or PM?</label>
+      <div class="radio-row">
+        <label><input type="radio" name="siteVisitTime" value="AM">AM</label>
+        <label><input type="radio" name="siteVisitTime" value="PM">PM</label>
+      </div>
+    </div>
 
+    <div class="radio-row" style="margin-top:10px;">
+      <span class="q">Second crew contact?</span>
+      <label><input type="radio" name="secondCrewContact" value="yes">Yes</label>
+      <label><input type="radio" name="secondCrewContact" value="no">No</label>
+    </div>
+    <div class="conditional secondCrewContactWhoBlock" hidden>
+      <label class="sub-label">Who (crew member you spoke to)</label>
+      <input type="text" class="secondCrewContactWho" placeholder="e.g. Mike">
+    </div>
+
+    <p class="sub-label" style="font-weight:600;margin-top:10px;">Customer contact</p>
+    <div class="radio-row">
+      <span class="q">Update given today?</span>
+      <label><input type="radio" name="custUpdate" value="yes">Yes</label>
+      <label><input type="radio" name="custUpdate" value="no">No</label>
+    </div>
+    <div class="conditional custUpdateBlock" hidden>
+      <label class="sub-label">Method</label>
+      <select class="custUpdateMethod">
+        <option value="">Select…</option>
+        <option>Spoke</option>
+        <option>Text</option>
+        <option>Voicemail</option>
+        <option>Email</option>
+      </select>
+      <label class="sub-label">What was covered</label>
+      <input type="text" class="custUpdateDetail" placeholder="Progress, next visit scheduled, concerns addressed">
+    </div>
+
+    <hr>
+    <div class="radio-row">
+      <span class="q">Carpentry or Change Order Needed?</span>
+      <label><input type="radio" name="carpentry" value="yes">Yes</label>
+      <label><input type="radio" name="carpentry" value="no">No</label>
+    </div>
+    <div class="conditional carpentryDetailBlock" hidden>
+      <input type="text" class="carpentryDetail" placeholder="What's needed">
+      <div class="checkbox-row"><input type="checkbox" class="companyCamPhotos"><span>Confirmed all needed pics in CompanyCam</span></div>
+      <label class="sub-label">Change order</label>
+      <div class="radio-row">
+        <label><input type="radio" name="changeOrder" value="Sent">Sent</label>
+        <label><input type="radio" name="changeOrder" value="Still needed">Still needed</label>
+      </div>
+    </div>
+
+    <hr>
     <label class="sub-label">Status</label>
     <select class="status">
       <option value="">Select…</option>
-      <option>In progress</option>
-      <option>Completing tomorrow</option>
-      <option>Completed today</option>
+      <option>In Progress</option>
+      <option>Job Delayed</option>
+      <option>Completed</option>
     </select>
 
-    <div class="radio-row">
-      <span class="q">Punch list confirmed?</span>
-      <label><input type="radio" name="punchList" value="yes">Yes</label>
-      <label><input type="radio" name="punchList" value="no">No</label>
+    <div class="conditional delayedBlock" hidden>
+      <label class="sub-label">Why is it delayed?</label>
+      <input type="text" class="delayedNote" placeholder="Reason for delay">
     </div>
 
-    <div class="walkthroughBlock" hidden>
+    <div class="conditional completedBlock" hidden>
+      <div class="radio-row">
+        <span class="q">Payment collected?</span>
+        <label><input type="radio" name="paymentCollected" value="yes">Yes</label>
+        <label><input type="radio" name="paymentCollected" value="no">No</label>
+      </div>
+      <div class="conditional paymentReasonBlock" hidden>
+        <label class="sub-label">Why not?</label>
+        <select class="paymentReason">
+          <option value="">Select…</option>
+          <option>Customer paying online</option>
+          <option>Payment pending — something we need to complete</option>
+          <option>Other</option>
+        </select>
+        <label class="sub-label">Note</label>
+        <input type="text" class="paymentNote" placeholder="Details">
+      </div>
+    </div>
+
+    <div class="walkthroughBlock">
       <div class="radio-row">
         <span class="q">Walkthrough scheduled?</span>
         <label><input type="radio" name="walkthrough" value="yes">Yes</label>
@@ -232,34 +308,24 @@
       <input type="text" class="walkthroughDate" placeholder="Date, e.g. Friday 8/28">
     </div>
 
+    <div class="radio-row">
+      <span class="q">Punch list confirmed?</span>
+      <label><input type="radio" name="punchList" value="yes">Yes</label>
+      <label><input type="radio" name="punchList" value="no">No</label>
+    </div>
+
     <hr>
-
     <div class="radio-row">
-      <span class="q">Carpentry/pricing needed?</span>
-      <label><input type="radio" name="carpentry" value="yes">Yes</label>
-      <label><input type="radio" name="carpentry" value="no">No</label>
-    </div>
-    <div class="conditional carpentryDetailBlock" hidden>
-      <input type="text" class="carpentryDetail" placeholder="What's needed">
-      <div class="checkbox-row"><input type="checkbox" class="companyCamPhotos"><span>Photos in CompanyCam</span></div>
-      <label class="sub-label">Change order</label>
-      <div class="radio-row">
-        <label><input type="radio" name="changeOrder" value="Sent">Sent</label>
-        <label><input type="radio" name="changeOrder" value="Still needed">Still needed</label>
-      </div>
-    </div>
-
-    <div class="radio-row">
-      <span class="q">Customer concern?</span>
+      <span class="q">Scope concerns or questions?</span>
       <label><input type="radio" name="concern" value="yes">Yes</label>
       <label><input type="radio" name="concern" value="no">No</label>
     </div>
     <div class="conditional concernDetailBlock" hidden>
-      <input type="text" class="concernDetail" placeholder="What's the concern">
+      <input type="text" class="concernDetail" placeholder="What's the concern or question">
     </div>
 
     <div class="radio-row">
-      <span class="q">Job site issue?</span>
+      <span class="q">Jobsite/crew/material issues or concerns?</span>
       <label><input type="radio" name="issue" value="yes">Yes</label>
       <label><input type="radio" name="issue" value="no">No</label>
     </div>
@@ -316,16 +382,29 @@ function addJobCard(prefill) {
   });
 
   const statusSelect = node.querySelector('.status');
-  const walkthroughBlock = node.querySelector('.walkthroughBlock');
+  const delayedBlock = node.querySelector('.delayedBlock');
+  const completedBlock = node.querySelector('.completedBlock');
   statusSelect.addEventListener('change', () => {
-    const show = statusSelect.value === 'Completed today' || statusSelect.value === 'Completing tomorrow';
-    walkthroughBlock.hidden = !show;
+    delayedBlock.hidden = statusSelect.value !== 'Job Delayed';
+    completedBlock.hidden = statusSelect.value !== 'Completed';
     saveDraft();
   });
 
+  bindConditional(node, 'siteVisit', '.siteVisitTimeBlock');
+  bindConditional(node, 'secondCrewContact', '.secondCrewContactWhoBlock');
+  bindConditional(node, 'custUpdate', '.custUpdateBlock');
   bindConditional(node, 'carpentry', '.carpentryDetailBlock');
   bindConditional(node, 'concern', '.concernDetailBlock');
   bindConditional(node, 'issue', '.issueDetailBlock');
+
+  const paymentRadios = node.querySelectorAll('input[name="paymentCollected"]');
+  const paymentReasonBlock = node.querySelector('.paymentReasonBlock');
+  paymentRadios.forEach((r) => {
+    r.addEventListener('change', () => {
+      paymentReasonBlock.hidden = !(r.checked && r.value === 'no');
+      saveDraft();
+    });
+  });
 
   document.getElementById('jobCards').appendChild(node);
 
@@ -366,15 +445,25 @@ function collectData() {
     jobs.push({
       jobName: card.querySelector('.jobName').value,
       onsite: getRadio(card, 'onsite'),
-      contact: card.querySelector('.contact').value,
-      status: card.querySelector('.status').value,
-      punchList: getRadio(card, 'punchList'),
-      walkthrough: getRadio(card, 'walkthrough'),
-      walkthroughDate: card.querySelector('.walkthroughDate').value,
+      siteVisit: getRadio(card, 'siteVisit'),
+      siteVisitTime: getRadio(card, 'siteVisitTime'),
+      secondCrewContact: getRadio(card, 'secondCrewContact'),
+      secondCrewContactWho: card.querySelector('.secondCrewContactWho').value,
+      custUpdate: getRadio(card, 'custUpdate'),
+      custUpdateMethod: card.querySelector('.custUpdateMethod').value,
+      custUpdateDetail: card.querySelector('.custUpdateDetail').value,
       carpentry: getRadio(card, 'carpentry'),
       carpentryDetail: card.querySelector('.carpentryDetail').value,
       companyCamPhotos: card.querySelector('.companyCamPhotos').checked,
       changeOrder: getRadio(card, 'changeOrder'),
+      status: card.querySelector('.status').value,
+      delayedNote: card.querySelector('.delayedNote').value,
+      paymentCollected: getRadio(card, 'paymentCollected'),
+      paymentReason: card.querySelector('.paymentReason').value,
+      paymentNote: card.querySelector('.paymentNote').value,
+      walkthrough: getRadio(card, 'walkthrough'),
+      walkthroughDate: card.querySelector('.walkthroughDate').value,
+      punchList: getRadio(card, 'punchList'),
       concern: getRadio(card, 'concern'),
       concernDetail: card.querySelector('.concernDetail').value,
       issue: getRadio(card, 'issue'),
@@ -447,25 +536,38 @@ function loadDraft() {
 function applyPrefillToCard(cardEl, job) {
   cardEl.querySelector('.jobName').value = job.jobName || '';
   setRadio(cardEl, 'onsite', job.onsite);
-  cardEl.querySelector('.contact').value = job.contact || '';
-  cardEl.querySelector('.status').value = job.status || '';
-  setRadio(cardEl, 'punchList', job.punchList);
-  setRadio(cardEl, 'walkthrough', job.walkthrough);
-  cardEl.querySelector('.walkthroughDate').value = job.walkthroughDate || '';
+  setRadio(cardEl, 'siteVisit', job.siteVisit);
+  setRadio(cardEl, 'siteVisitTime', job.siteVisitTime);
+  setRadio(cardEl, 'secondCrewContact', job.secondCrewContact);
+  cardEl.querySelector('.secondCrewContactWho').value = job.secondCrewContactWho || '';
+  setRadio(cardEl, 'custUpdate', job.custUpdate);
+  cardEl.querySelector('.custUpdateMethod').value = job.custUpdateMethod || '';
+  cardEl.querySelector('.custUpdateDetail').value = job.custUpdateDetail || '';
   setRadio(cardEl, 'carpentry', job.carpentry);
   cardEl.querySelector('.carpentryDetail').value = job.carpentryDetail || '';
   cardEl.querySelector('.companyCamPhotos').checked = !!job.companyCamPhotos;
   setRadio(cardEl, 'changeOrder', job.changeOrder);
+  cardEl.querySelector('.status').value = job.status || '';
+  cardEl.querySelector('.delayedNote').value = job.delayedNote || '';
+  setRadio(cardEl, 'paymentCollected', job.paymentCollected);
+  cardEl.querySelector('.paymentReason').value = job.paymentReason || '';
+  cardEl.querySelector('.paymentNote').value = job.paymentNote || '';
+  setRadio(cardEl, 'walkthrough', job.walkthrough);
+  cardEl.querySelector('.walkthroughDate').value = job.walkthroughDate || '';
+  setRadio(cardEl, 'punchList', job.punchList);
   setRadio(cardEl, 'concern', job.concern);
   cardEl.querySelector('.concernDetail').value = job.concernDetail || '';
   setRadio(cardEl, 'issue', job.issue);
   cardEl.querySelector('.issueDetail').value = job.issueDetail || '';
 
   // Reveal conditional blocks that should be visible based on loaded values
-  if (job.status === 'Completed today' || job.status === 'Completing tomorrow') {
-    cardEl.querySelector('.walkthroughBlock').hidden = false;
-  }
+  if (job.siteVisit === 'yes') cardEl.querySelector('.siteVisitTimeBlock').hidden = false;
+  if (job.secondCrewContact === 'yes') cardEl.querySelector('.secondCrewContactWhoBlock').hidden = false;
+  if (job.custUpdate === 'yes') cardEl.querySelector('.custUpdateBlock').hidden = false;
   if (job.carpentry === 'yes') cardEl.querySelector('.carpentryDetailBlock').hidden = false;
+  if (job.status === 'Job Delayed') cardEl.querySelector('.delayedBlock').hidden = false;
+  if (job.status === 'Completed') cardEl.querySelector('.completedBlock').hidden = false;
+  if (job.paymentCollected === 'no') cardEl.querySelector('.paymentReasonBlock').hidden = false;
   if (job.concern === 'yes') cardEl.querySelector('.concernDetailBlock').hidden = false;
   if (job.issue === 'yes') cardEl.querySelector('.issueDetailBlock').hidden = false;
 }
