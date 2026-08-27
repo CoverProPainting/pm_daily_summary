@@ -19,26 +19,40 @@ function buildJobHtml(job, index) {
   rows.push(`<h3 style="margin:18px 0 6px;color:#1a1a1a;">Job ${index + 1}: ${esc(job.jobName) || '(no name entered)'}</h3>`);
   rows.push(`<table style="width:100%;border-collapse:collapse;font-size:14px;">`);
 
-  const row = (label, value) => `<tr><td style="padding:4px 8px 4px 0;color:#555;width:220px;vertical-align:top;">${label}</td><td style="padding:4px 0;">${value}</td></tr>`;
+  const row = (label, value) => `<tr><td style="padding:4px 8px 4px 0;color:#555;width:240px;vertical-align:top;">${label}</td><td style="padding:4px 0;">${value}</td></tr>`;
 
   rows.push(row('Customer onsite today?', yn(job.onsite)));
-  rows.push(row('Customer contact (who/how/when)', esc(job.contact) || '—'));
-  rows.push(row('Status', esc(job.status) || '—'));
-  rows.push(row('Punch list confirmed?', yn(job.punchList)));
-  if (job.status === 'Completed today' || job.status === 'Completing tomorrow') {
-    rows.push(row('Walkthrough scheduled?', yn(job.walkthrough) + (job.walkthroughDate ? ` (${esc(job.walkthroughDate)})` : '')));
+  rows.push(row('Site visit?', yn(job.siteVisit) + (job.siteVisit === 'yes' && job.siteVisitTime ? ` (${esc(job.siteVisitTime)})` : '')));
+  rows.push(row('Second crew contact?', yn(job.secondCrewContact) + (job.secondCrewContact === 'yes' && job.secondCrewContactWho ? ` — ${esc(job.secondCrewContactWho)}` : '')));
+  rows.push(row('Customer update given today?', yn(job.custUpdate)));
+  if (job.custUpdate === 'yes') {
+    rows.push(row('&nbsp;&nbsp;Method', esc(job.custUpdateMethod) || '—'));
+    rows.push(row('&nbsp;&nbsp;What was covered', esc(job.custUpdateDetail) || '—'));
   }
-  rows.push(row('Carpentry/pricing needed?', yn(job.carpentry)));
+  rows.push(row('Carpentry or Change Order Needed?', yn(job.carpentry)));
   if (job.carpentry === 'yes') {
     rows.push(row('&nbsp;&nbsp;What\'s needed', esc(job.carpentryDetail) || '—'));
-    rows.push(row('&nbsp;&nbsp;Photos in CompanyCam?', job.companyCamPhotos ? 'Yes' : 'No'));
+    rows.push(row('&nbsp;&nbsp;Confirmed all needed pics in CompanyCam?', job.companyCamPhotos ? 'Yes' : 'No'));
     rows.push(row('&nbsp;&nbsp;Change order', esc(job.changeOrder) || '—'));
   }
-  rows.push(row('Customer concern?', yn(job.concern)));
+  rows.push(row('Status', esc(job.status) || '—'));
+  if (job.status === 'Job Delayed') {
+    rows.push(row('&nbsp;&nbsp;Why delayed', esc(job.delayedNote) || '—'));
+  }
+  if (job.status === 'Completed') {
+    rows.push(row('&nbsp;&nbsp;Payment collected?', yn(job.paymentCollected)));
+    if (job.paymentCollected === 'no') {
+      rows.push(row('&nbsp;&nbsp;&nbsp;&nbsp;Why not', esc(job.paymentReason) || '—'));
+      rows.push(row('&nbsp;&nbsp;&nbsp;&nbsp;Note', esc(job.paymentNote) || '—'));
+    }
+  }
+  rows.push(row('Walkthrough scheduled?', yn(job.walkthrough) + (job.walkthroughDate ? ` (${esc(job.walkthroughDate)})` : '')));
+  rows.push(row('Punch list confirmed?', yn(job.punchList)));
+  rows.push(row('Scope concerns or questions?', yn(job.concern)));
   if (job.concern === 'yes') {
     rows.push(row('&nbsp;&nbsp;What concern', esc(job.concernDetail) || '—'));
   }
-  rows.push(row('Job site issue?', yn(job.issue)));
+  rows.push(row('Jobsite/crew/material issues or concerns?', yn(job.issue)));
   if (job.issue === 'yes') {
     rows.push(row('&nbsp;&nbsp;What issue', esc(job.issueDetail) || '—'));
   }
@@ -51,13 +65,19 @@ function buildActionItems(jobs) {
   jobs.forEach((job) => {
     const name = job.jobName || '(unnamed job)';
     if (job.carpentry === 'yes') {
-      items.push(`${name} — carpentry/pricing needed${job.changeOrder === 'Still needed' ? ', change order still needed' : ''}`);
+      items.push(`${name} — carpentry/change order needed${job.changeOrder === 'Still needed' ? ', change order still needed' : ''}`);
+    }
+    if (job.status === 'Job Delayed') {
+      items.push(`${name} — job delayed`);
+    }
+    if (job.status === 'Completed' && job.paymentCollected === 'no') {
+      items.push(`${name} — payment not yet collected (${job.paymentReason || 'no reason given'})`);
     }
     if (job.concern === 'yes') {
-      items.push(`${name} — customer concern flagged`);
+      items.push(`${name} — scope concern or question flagged`);
     }
     if (job.issue === 'yes') {
-      items.push(`${name} — job site issue flagged`);
+      items.push(`${name} — jobsite/crew/material issue flagged`);
     }
   });
   return items;
@@ -118,6 +138,22 @@ module.exports = async (req, res) => {
       subject: `PM Daily Summary — ${data.pmName || 'PM'} — ${data.date || ''}`,
       html: buildEmailHtml(data),
     });
+
+    // Separate, recap-only email to Justin — only sent if a recap was actually entered,
+    // and only contains the recap, never the rest of the form.
+    if (data.justinRecap && data.justinRecap.trim() && process.env.JUSTIN_EMAIL) {
+      const justinHtml = `
+        <div style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;max-width:600px;">
+          <h2 style="margin-bottom:4px;">Black Pearl Recap — ${esc(data.date)}</h2>
+          <p style="white-space:pre-wrap;">${esc(data.justinRecap)}</p>
+        </div>`;
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: process.env.JUSTIN_EMAIL,
+        subject: `Black Pearl Recap — ${data.date || ''}`,
+        html: justinHtml,
+      });
+    }
 
     res.status(200).json({ success: true });
   } catch (err) {
